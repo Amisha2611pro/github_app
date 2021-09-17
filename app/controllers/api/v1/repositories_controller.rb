@@ -6,26 +6,25 @@ module Api
 
       def index
         repositories = Repository.all
-        render json: { status: :success, repositories: repositories,  message: "Got all repository successfully" }
+        render :json => repositories, each_serializer: Api::V1::RepositorySerializer, status: :ok
       end
 
       def create
-        repository = Repository.new(repository_params)
-        repository.user_id = current_user.id
+        repository = Repository.new(repository_params.merge(user_id: current_user.id))
         if repository.save
-          render json:  {repository: repository, status: :success, message: "repository created successfully"}
+          render :json => repository, each_serializer: Api::V1::RepositorySerializer, status: :ok
         else
           render json: {error: "repository is not created"}
         end
       end
 
       def show
-        render json: {status: :success, repository: @repository }
+        render :json => @repository, each_serializer: Api::V1::RepositorySerializer, status: :ok
       end
 
       def update
         if @repository && @repository.update(repository_params)
-          render json: { status: :success, repository: @repository, message: "repository updated successfully"}
+          render :json => @repository, each_serializer: Api::V1::RepositorySerializer, status: :ok
         else
           render json: { error: "Something went wrong, repository is not updated yet" } 
         end
@@ -39,7 +38,7 @@ module Api
       def events
         events = Event.where(repository_id: params[:repository_id])
         if events.present?
-          render json: { status: :success, events: events, message: "Got all events" }
+          render :json => events, each_serializer: Api::V1::EventSerializer, status: :ok
         else
           render json: { error: "Something went wrong, event not present" } 
         end

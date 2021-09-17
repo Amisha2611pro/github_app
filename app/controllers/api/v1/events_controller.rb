@@ -6,25 +6,25 @@ module Api
 
       def index
         events = Event.all
-        render json: { status: :success, events: events, message: "Got all events successfully" }
+        render :json => events, each_serializer: Api::V1::EventSerializer, status: :ok
       end
 
       def create
         event = Event.new(event_params.merge(user_id: current_user.id))
         if event.save
-          render json:  {event: event, status: :success, message: "event created successfully"}
+          render :json => event, each_serializer: Api::V1::EventSerializer, status: :ok
         else
           render json: {error: "event is not created"}
         end
       end
 
       def show
-        render json: {status: :success, event: @event }
+        render :json => @event, each_serializer: Api::V1::EventSerializer, status: :ok
       end
 
       def update
         if @event && @event.update(update_event_params)
-          render json: { status: :success, event: @event, message: "event updated successfully" }
+          render :json => @event, each_serializer: Api::V1::EventSerializer, status: :ok
         else
           render json: { error: "Something went wrong, event is not updated yet" }  
         end
