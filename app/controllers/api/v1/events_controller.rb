@@ -6,7 +6,7 @@ module Api
 
       def index
         events = Event.all
-        render json: { status: :success, events: events }
+        render json: { status: :success, events: events, message: "Got all events successfully" }
       end
 
       def create
@@ -23,8 +23,11 @@ module Api
       end
 
       def update
-        render json: { error: "Something went wrong, event is updated yet" } unless @event.update(event_params)
-        render json: { status: :success, event: @event }
+        if @event && @event.update(event_params)
+          render json: { status: :success, event: @event, message: "event updated successfully" }
+        else
+          render json: { error: "Something went wrong, event is not updated yet" }  
+        end
       end
 
       def destroy

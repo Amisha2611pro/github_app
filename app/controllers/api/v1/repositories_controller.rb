@@ -2,12 +2,11 @@ module Api
   module V1
     class RepositoriesController < ApplicationController
       before_action :authenticate_user!
-      skip_before_action :verify_authenticity_token, only: :create
       before_action :find_repository, only: [:destroy, :show, :update]
 
       def index
         repositories = Repository.all
-        render json: { status: :success, repositories: repositories }
+        render json: { status: :success, repositories: repositories,  message: "Got all repository successfully" }
       end
 
       def create
@@ -25,13 +24,25 @@ module Api
       end
 
       def update
-        render json: { error: "Something went wrong, repository is not updated yet" } unless @repository.update(repository_params)
-        render json: { status: :success, repository: @repository }
+        if @repository && @repository.update(repository_params)
+          render json: { status: :success, repository: @repository, message: "repository updated successfully"}
+        else
+          render json: { error: "Something went wrong, repository is not updated yet" } 
+        end
       end
 
       def destroy
         @repository.destroy
         render json: { status: :success, message: "repository is deleted" }
+      end
+
+      def events
+        events = Event.where(repository_id: params[:repository_id])
+        if events.present?
+          render json: { status: :success, events: events, message: "Got all events" }
+        else
+          render json: { error: "Something went wrong, event not present" } 
+        end
       end
 
       private
