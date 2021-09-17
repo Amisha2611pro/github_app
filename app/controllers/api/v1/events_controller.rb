@@ -2,7 +2,6 @@ module Api
   module V1
     class EventsController < ApplicationController
       before_action :authenticate_user!
-      skip_before_action :verify_authenticity_token, only: :create
       before_action :find_event, only: [:destroy, :show, :update]
 
       def index
@@ -11,7 +10,7 @@ module Api
       end
 
       def create
-        event = Event.new(event_params)
+        event = Event.new(event_params.merge(user_id: current_user.id))
         if event.save
           render json:  {event: event, status: :success, message: "event created successfully"}
         else
@@ -35,7 +34,7 @@ module Api
 
       private
       def event_params
-        params.require(:event).permit(:repository_id, :event_type)
+        params.require(:event).permit(:repository_id, :event_type, :user_id)
       end
 
       def find_event

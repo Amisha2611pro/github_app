@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   has_many :authentication_tokens, dependent: :destroy
   has_many :repositories, dependent: :destroy
+  has_many :events, dependent: :destroy
   
   validates :username, presence: true
   validates :username, format: { without: /\s/, message: "must contain no spaces" }
