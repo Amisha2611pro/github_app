@@ -23,7 +23,7 @@ module Api
       end
 
       def update
-        if @event && @event.update(event_params)
+        if @event && @event.update(update_event_params)
           render json: { status: :success, event: @event, message: "event updated successfully" }
         else
           render json: { error: "Something went wrong, event is not updated yet" }  
@@ -38,6 +38,10 @@ module Api
       private
       def event_params
         params.require(:event).permit(:repository_id, :event_type, :user_id)
+      end
+
+      def update_event_params
+        params.require(:event).permit(:event_type)
       end
 
       def find_event
